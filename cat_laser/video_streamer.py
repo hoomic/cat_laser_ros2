@@ -21,8 +21,8 @@ class VideoStream(Node):
     # initialize the video camera stream and read the first frame
     # from the stream
     self.stream = cv2.VideoCapture(src)
-    self.stream.set(cv2.CAP_PROP_FRAME_WIDTH,640)
-    self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT,480)
+    self.stream.set(cv2.CAP_PROP_FRAME_WIDTH,320)
+    self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT,240)
 
   def publish_frame(self):
     ret, frame = self.stream.read()
