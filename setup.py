@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+          'video_streamer = cat_laser.video_streamer:main'
         ],
     },
 )
