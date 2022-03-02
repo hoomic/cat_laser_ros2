@@ -21,6 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
           'video_streamer = cat_laser.video_streamer:main'
+          , 'video_watcher = cat_laser.video_watcher:main'
         ],
     },
 )
