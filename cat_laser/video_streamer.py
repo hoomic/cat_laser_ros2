@@ -3,7 +3,6 @@ from rclpy.node import Node
 
 from sensor_msgs.msg import Image
 
-from threading import Thread
 import cv2
 from cv_bridge import CvBridge
 
@@ -22,6 +21,8 @@ class VideoStream(Node):
     # initialize the video camera stream and read the first frame
     # from the stream
     self.stream = cv2.VideoCapture(src)
+    self.stream.set(cv2.CV_CAP_PROP_FRAME_WIDTH,640)
+    self.stream.set(cv2.CV_CAP_PROP_FRAME_HEIGHT,480)
 
   def publish_frame(self):
     ret, frame = self.stream.read()
