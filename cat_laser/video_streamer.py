@@ -26,7 +26,7 @@ class VideoStream(Node):
   def publish_frame(self):
     ret, frame = self.stream.read()
     if ret:
-      msg = bridge.cv2_to_imgmsg(self.frame, encoding="passthrough")
+      msg = bridge.cv2_to_imgmsg(frame, encoding="passthrough")
       self.frame_publisher_.publish(msg)
 
 
