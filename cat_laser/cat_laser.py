@@ -41,6 +41,9 @@ class CatLaser(Node):
       , 10
       )
 
+    self.pan_factor = 0.1
+    self.tilt_factor = 0.1
+
   def process_movement(self, msg):
     self.pan_servo.increment_angle(msg.x * self.pan_factor)
     self.tilt_servo.increment_angle(msg.y * self.tilt_factor)
