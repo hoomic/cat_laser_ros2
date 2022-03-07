@@ -41,8 +41,8 @@ class CatLaser(Node):
       , 10
       )
 
-    self.pan_factor = 0.001
-    self.tilt_factor = 0.001
+    self.pan_factor = 0.0001
+    self.tilt_factor = 0.0001
 
   def process_movement(self, msg):
     print("Processing movement x={} y={}".format(msg.x, msg.y))
