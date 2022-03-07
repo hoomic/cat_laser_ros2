@@ -47,8 +47,8 @@ class MotionTracker(Node):
           cv2.circle(diff, (x, y), 20, 255, 2)
           pt = self.center if self.laser_loc is None else self.laser_loc
           msg = Vector3()
-          msg.x = float(x - pt[0])
-          msg.y = float(y - pt[1])
+          msg.x = float(pt[0] - x)
+          msg.y = float(pt[1] - y)
           self.movement_pub_.publish(msg)
         cv2.putText(diff, "max: {}".format(np.max(diff)), (0, 230), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 255)
         cv2.imshow('diff', diff)
