@@ -57,8 +57,8 @@ class CatLaser(Node):
   def publish_state(self):
     msg = Vector3()
     try:
-      msg.x = self.pan_servo.angle
-      msg.y = self.tilt_servo.angle
+      msg.x = float(self.pan_servo.angle)
+      msg.y = float(self.tilt_servo.angle)
       self.state_publisher_.publish(msg)
     except Exception as e:
       print("Warning the following exception was caught while trying\
