@@ -25,7 +25,7 @@ class CatLaser(Node):
     self.verbose = verbose
 
     self.laser = Laser(laser_pin)
-    self.pan_servo = Servo(pan_pin, np.pi/6, np.pi * 5/6)
+    self.pan_servo = Servo(pan_pin, np.pi/8, np.pi * 7/8)
     self.tilt_servo = Servo(tilt_pin)
 
     self.floor = FloorMap()
