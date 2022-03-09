@@ -24,6 +24,7 @@ setup(
           , 'video_watcher = cat_laser.video_watcher:main'
           , 'motion_tracker = cat_laser.motion_tracker:main'
           , 'cat_laser = cat_laser.cat_laser:main'
+          , 'floor_map = cat_laser.floor_map:main'
         ],
     },
 )
