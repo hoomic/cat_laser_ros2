@@ -36,10 +36,18 @@ class CatLaser(Node):
 
     self.movement_sub_ = self.create_subscription(
       Vector3
-      , 'motion_tracker/movement'
+      , 'cat_laser/movement'
       , self.process_movement
       , 10
       )
+
+    self.state_publisher_ = self.create_publisher(
+      Vector3
+      , 'cat_laser/state'
+      , 10
+      )
+
+    self.timer = self.create_timer(1./30, self.publish_state)
 
     self.pan_factor = 0.0001
     self.tilt_factor = 0.0001
@@ -48,6 +56,12 @@ class CatLaser(Node):
     print("Processing movement x={} y={}".format(msg.x, msg.y))
     self.pan_servo.increment_angle(msg.x * self.pan_factor)
     self.tilt_servo.increment_angle(msg.y * self.tilt_factor)
+
+  def publish_state(self):
+    msg = Vector3()
+    msg.x = self.pan_servo.angle
+    msg.y = self.tilt_servo.angle
+    self.state_publisher_.publish(msg)
 
   def set_point(self, pos, delay=0.01):
     self.set_angles(*self.floor.get_pitch_yaw(pos), delay)

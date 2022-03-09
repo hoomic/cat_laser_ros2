@@ -23,7 +23,7 @@ class MotionTracker(Node):
       , self.process_frame
       , 10)
 
-    self.movement_pub_ = self.create_publisher(Vector3, '/motion_tracker/movement', 10)
+    self.movement_pub_ = self.create_publisher(Vector3, '/cat_laser/movement', 10)
     self.laser_loc = None
     self.prev_gray = None
 
