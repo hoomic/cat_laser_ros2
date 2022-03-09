@@ -61,7 +61,7 @@ class CatLaser(Node):
       msg.y = self.tilt_servo.angle
       self.state_publisher_.publish(msg)
     except Exception as e:
-      print("Warning the following exception was caught while trying to publish the state:\n{}".fromat(e.what))
+      print("Warning the following exception was caught while trying to publish the state:\n{}".format(e.what))
 
   def set_point(self, pos, delay=0.01):
     self.set_angles(*self.floor.get_pitch_yaw(pos), delay)
