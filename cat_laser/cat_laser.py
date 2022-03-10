@@ -50,9 +50,9 @@ class CatLaser(Node):
     self.timer = self.create_timer(1./30, self.publish_state)
 
   def process_movement(self, msg):
-    print("Processing movement x={} y={}".format(msg.x, msg.y))
-    self.pan_servo.increment_angle(msg.x)
-    self.tilt_servo.increment_angle(msg.y)
+    print("Processing movement x={} y={} delay={}".format(msg.x, msg.y, msg.z))
+    self.pan_servo.increment_angle(msg.x, msg.z)
+    self.tilt_servo.increment_angle(msg.y, msg.z)
 
   def publish_state(self):
     msg = Vector3()

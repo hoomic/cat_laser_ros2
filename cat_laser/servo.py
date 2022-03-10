@@ -21,6 +21,7 @@ class Servo():
     self.angle = angle
 
   def increment_angle(self, increment, delay=0.1):
+    delay = max(0.1, delay)
     self.set_angle(self.angle + increment, delay)
 
   def stop(self):
