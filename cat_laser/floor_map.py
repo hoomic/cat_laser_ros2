@@ -62,6 +62,8 @@ class FloorMap(Node):
 
     self.movement_pub_ = self.create_publisher(Vector3, '/cat_laser/movement', 5)
 
+    self.laser_pub_ = self.create_publisher(Vector3, '/cat_laser/laser_coordinates', 5)
+
     self.state = CalibrationState.CALIBRATE_LASER
     #self.message = "Click point in image that points straight down"
     self.height = 90 # hard coded now to the height of my setup, but should be a user input
@@ -136,6 +138,10 @@ class FloorMap(Node):
     elif event == cv2.EVENT_RBUTTONDOWN:
       if self.state == CalibrationState.CALIBRATE_LASER:
         self.laser_coordinates = (x, y)
+        msg = Vector3()
+        msg.x = float(x) / self.display_factor
+        msg.y = float(y) / self.display_factor
+        self.laser_pub_.publish(msg)
         self.state = CalibrationState.CALIBRATE_TILT
       elif self.state == CalibrationState.CALIBRATE_TILT:
         print("Setting base_tilt={}".format(self.servo_state[1]))
