@@ -16,8 +16,8 @@ from .laser import Laser
 bridge = CvBridge()
 
 laser_pin = 7
-pan_pin = 11
-tilt_pin = 12
+pan_pin = 12
+tilt_pin = 13
 
 class CatLaser(Node):
   def __init__(self, verbose=False):
@@ -78,8 +78,6 @@ class CatLaser(Node):
     self.laser.turn_off()
     center = self.floor.get_center()
     self.set_point(center, 0.5)
-    self.pan_servo.stop()
-    self.tilt_servo.stop()
     GPIO.cleanup()
 
 class FloorMap():
@@ -137,6 +135,7 @@ def main(args=None):
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
+    GPIO.cleanup()
     cat_laser.close()
     cat_laser.destroy_node()
     rclpy.shutdown()

@@ -9,7 +9,7 @@ factory = PiGPIOFactory()
 
 class Servo(gpiozero.Servo):
   def __init__(self, pin, lo=0, hi=np.pi):
-    super().__init__(self, pin, pin_factory=factory)
+    super().__init__(pin, pin_factory=factory)
     self.lo = lo; self.hi = hi
     self.angle = 0
 
@@ -21,6 +21,3 @@ class Servo(gpiozero.Servo):
   def increment_angle(self, increment, delay=0.1):
     delay = max(0.01, delay)
     self.set_angle(self.angle + increment, delay)
-
-  def stop(self):
-    self.servo.stop()
