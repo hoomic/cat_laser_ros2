@@ -35,7 +35,7 @@ class CatDetector(Node):
 
     self.movement_pub_ = self.create_publisher(Vector3, '/cat_laser/movement', 10)
 
-    self.model = torch.hub.load('ultralytics/yolov5', 'yolov5m')
+    self.model = torch.hub.load('ultralytics/yolov5', 'yolov5l')
     self.model.multi_label = True
 
     self.model.classes = [self.model.names.index('cat')]
@@ -54,10 +54,11 @@ class CatDetector(Node):
     if self.laser_coords is None:
       self.laser_coords = (frame.shape[1] / 2, frame.shape[0] / 2)
     results = self.model(frame).pandas().xyxy[0]
-    if len(results) and np.any([cat.confidence > 0.5 for cat in results]):
+    if len(results) and np.any([cat['confidence'] > 0.5 for i, cat in results.iterrows()]):
+      results.reset_index()
       x_ave, y_ave, n = 0, 0, 0
-      for cat in results:
-        cat = results.iloc[0]
+      for i in range(len(results)):
+        cat = results.iloc[i]
         cx = (cat.xmin + cat.xmax) / 2
         cy = (cat.ymin + cat.ymax) / 2
 
