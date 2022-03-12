@@ -11,13 +11,13 @@ from cv_bridge import CvBridge
 import RPi.GPIO as GPIO
 
 from .servo import Servo
-from .laser import Laser
+from gpiozero import LED as Laser
 
 bridge = CvBridge()
 
-laser_pin = 7
-pan_pin = 11
-tilt_pin = 12
+laser_pin = 4
+pan_pin = 12
+tilt_pin = 13
 
 class CatLaser(Node):
   def __init__(self, verbose=False):
@@ -31,7 +31,7 @@ class CatLaser(Node):
     self.floor = FloorMap()
 
     center = self.floor.get_center()
-    self.laser.turn_on()
+    self.laser.on()
     self.set_point(center, 0.5)
 
     self.movement_sub_ = self.create_subscription(
@@ -75,11 +75,9 @@ class CatLaser(Node):
     self.pan_servo.set_angle(yaw, delay)
 
   def close(self):
-    self.laser.turn_off()
+    self.laser.off()
     center = self.floor.get_center()
     self.set_point(center, 0.5)
-    self.pan_servo.stop()
-    self.tilt_servo.stop()
     GPIO.cleanup()
 
 class FloorMap():
