@@ -12,7 +12,6 @@ import RPi.GPIO as GPIO
 
 from .servo import Servo
 from gpiozero import LED as Laser
-from .laser import Laser
 
 bridge = CvBridge()
 
@@ -136,7 +135,6 @@ def main(args=None):
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    GPIO.cleanup()
     cat_laser.close()
     cat_laser.destroy_node()
     rclpy.shutdown()
