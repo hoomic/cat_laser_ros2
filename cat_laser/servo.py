@@ -1,23 +1,21 @@
 import numpy as np
 
-import RPi.GPIO as GPIO
+import gpiozero
+from gpiozero.pins.pigpio import PiGPIOFactory
+
 import time
 
-GPIO.setmode(GPIO.BOARD)
+factory = PiGPIOFactory()
 
-class Servo():
+class Servo(gpiozero.Servo):
   def __init__(self, pin, lo=0, hi=np.pi):
-    GPIO.setup(pin, GPIO.OUT)
-    self.servo = GPIO.PWM(pin, 50)
-    self.servo.start(0)
+    super().__init__(self, pin, pin_factory=factory)
     self.lo = lo; self.hi = hi
+    self.angle = 0
 
   def set_angle(self, angle, delay=0.1):
     angle = max(self.lo, min(self.hi, angle))
-    duty = angle * 10 / np.pi + 2. 
-    self.servo.ChangeDutyCycle(duty)
-    time.sleep(delay)
-    self.servo.ChangeDutyCycle(0)
+    self.value = angle / np.pi/2 - 1.0
     self.angle = angle
 
   def increment_angle(self, increment, delay=0.1):
