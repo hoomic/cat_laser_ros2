@@ -9,7 +9,7 @@ factory = PiGPIOFactory()
 
 class Servo(gpiozero.Servo):
   def __init__(self, pin, lo=0, hi=np.pi):
-    super().__init__(pin, pin_factory=factory)
+    super().__init__(pin, min_pulse_width=0.5/1000, max_pulse_width=2.5/1000, pin_factory=factory)
     self.lo = lo; self.hi = hi
     self.angle = 0
 
