@@ -3,6 +3,7 @@ from rclpy.node import Node
 
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Vector3
+from cat_laser_interfaces import PanTilt
 
 import cv2
 import numpy as np
@@ -43,9 +44,9 @@ message_map = {
   ]
 }
 
-class FloorMap(Node):
+class FloorCalibration(Node):
   def __init__(self):
-    super().__init__('floor_map')
+    super().__init__('floor_calibration')
 
     self.frame_subscriber_ = self.create_subscription(
       Image
@@ -54,13 +55,13 @@ class FloorMap(Node):
       , 1) #set to 1 so that we discard all but the latest frame
 
     self.state_subscriber_ = self.create_subscription(
-      Vector3
+      PanTilt
       , '/cat_laser/state'
       , self.process_state
       , 10
     )
 
-    self.movement_pub_ = self.create_publisher(Vector3, '/cat_laser/movement', 5)
+    self.movement_pub_ = self.create_publisher(PanTilt, '/cat_laser/movement', 5)
 
     self.laser_pub_ = self.create_publisher(Vector3, '/cat_laser/laser_coordinates', 5)
 
@@ -131,9 +132,10 @@ class FloorMap(Node):
         if self.state == CalibrationState.FIND_FLOOR:
           self.add_corner(x, y)
       else:
-        msg = Vector3()
-        msg.x = float(cx - x) * 0.001 / self.display_factor
-        msg.y = float(cy - y) * 0.001 / self.display_factor
+        msg = PanTilt()
+        msg.pan = float(cx - x) * 0.001 / self.display_factor
+        msg.tilt = float(cy - y) * 0.001 / self.display_factor
+        msg.increment = True
         self.movement_pub_.publish(msg)
     elif event == cv2.EVENT_RBUTTONDOWN:
       if self.state == CalibrationState.CALIBRATE_LASER:
@@ -158,8 +160,9 @@ class FloorMap(Node):
     floor_dist = self.height * np.tan(tilt - self.base_tilt)
     x = np.cos(pan) * floor_dist
     y = np.sin(pan) * floor_dist
-    print("Adding Corner at x={} y={} pan={} tilt={}".format(x, y, pan, tilt))
-    self.corners.append(Corner(x, y, pan, tilt))
+    if not np.any([np.sqrt((x - c.x)**2 + (y - c.y)**2) < 10 for c in self.corners]):
+      print("Adding Corner at x={} y={} pan={} tilt={}".format(x, y, pan, tilt))
+      self.corners.append(Corner(x, y, pan, tilt))
 
   def finish(self):
     pass
@@ -167,14 +170,14 @@ class FloorMap(Node):
 def main(args=None):
   rclpy.init(args=args)
 
-  floor_map = FloorMap()
+  floor_calibration = FloorCalibration()
 
-  rclpy.spin(floor_map)
+  rclpy.spin(floor_calibration)
 
   # Destroy the node explicitly
   # (optional - otherwise it will be done automatically
   # when the garbage collector destroys the node object)
-  floor_map.destroy_node()
+  floor_calibration.destroy_node()
   rclpy.shutdown()
 
 if __name__ == '__main__':

@@ -3,6 +3,7 @@ from rclpy.node import Node
 
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Vector3
+from cat_laser_interfaces.msg import PanTilt
 
 import cv2
 import numpy as np
@@ -35,14 +36,14 @@ class CatLaser(Node):
     self.set_point(center, 0.5)
 
     self.movement_sub_ = self.create_subscription(
-      Vector3
+      PanTilt
       , 'cat_laser/movement'
       , self.process_movement
       , 10
       )
 
     self.state_publisher_ = self.create_publisher(
-      Vector3
+      PanTilt
       , 'cat_laser/state'
       , 10
       )
@@ -50,15 +51,19 @@ class CatLaser(Node):
     self.timer = self.create_timer(1./30, self.publish_state)
 
   def process_movement(self, msg):
-    print("Processing movement x={} y={} delay={}".format(msg.x, msg.y, msg.z))
-    self.pan_servo.increment_angle(msg.x, msg.z)
-    self.tilt_servo.increment_angle(msg.y, msg.z)
+    print("Processing movement pan={} tilt={}".format(msg.pan, msg.tilt))
+    if msg.increment:
+      self.pan_servo.increment_angle(msg.pan)
+      self.tilt_servo.increment_angle(msg.tilt)
+    else:
+      self.pan_servo.set_angle(msg.pan)
+      self.tilt_servo.set_angle(msg.tilt)
 
   def publish_state(self):
-    msg = Vector3()
+    msg = PanTilt()
     try:
-      msg.x = float(self.pan_servo.angle)
-      msg.y = float(self.tilt_servo.angle)
+      msg.pan = float(self.pan_servo.angle)
+      msg.tilt = float(self.tilt_servo.angle)
       self.state_publisher_.publish(msg)
     except Exception as e:
       print("Warning the following exception was caught while trying\
@@ -66,13 +71,13 @@ class CatLaser(Node):
          e, self.pan_servo.angle, self.tilt_servo.angle
        ))
 
-  def set_point(self, pos, delay=0.01):
-    self.set_angles(*self.floor.get_pitch_yaw(pos), delay)
+  def set_point(self, pos):
+    self.set_angles(*self.floor.get_pitch_yaw(pos))
     self.position = pos
 
-  def set_angles(self, pitch, yaw, delay=0.01):
-    self.tilt_servo.set_angle(pitch, delay)
-    self.pan_servo.set_angle(yaw, delay)
+  def set_angles(self, pitch, yaw):
+    self.tilt_servo.set_angle(pitch)
+    self.pan_servo.set_angle(yaw)
 
   def close(self):
     self.laser.off()
