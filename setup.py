@@ -1,4 +1,6 @@
 from setuptools import setup
+import os
+from glob import glob
 
 package_name = 'cat_laser'
 
@@ -10,6 +12,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name, 'config'),
+          glob(os.path.join('config', '*.yaml'))),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -26,6 +30,8 @@ setup(
           , 'cat_laser = cat_laser.cat_laser:main'
           , 'floor_map = cat_laser.floor_map:main'
           , 'cat_detector = cat_laser.cat_detector:main'
+          , 'cat_tracker = cat_laser.cat_tracker:main'
+          , 'runner = cat_laser.runner:main'
         ],
     },
 )
