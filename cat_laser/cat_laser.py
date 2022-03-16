@@ -33,7 +33,7 @@ class CatLaser(Node):
 
     center = self.floor.get_center()
     self.laser.on()
-    self.set_point(center, 0.5)
+    self.set_point(center)
 
     self.movement_sub_ = self.create_subscription(
       PanTilt
