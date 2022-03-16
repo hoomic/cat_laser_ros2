@@ -1,0 +1,8 @@
+update_rate: 30 #Hz
+
+running:
+  sin_amplitude: 1.0
+
+wiggle:
+  duration: 300
+  sigma: 1.0
