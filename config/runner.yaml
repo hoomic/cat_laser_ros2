@@ -1,8 +1,16 @@
 update_rate: 30 #Hz
 
+floor_map:
+  inset: 0.05
+
 running:
-  sin_amplitude: 1.0
+  duration: 150
+  sin_amplitude: 0.5
+  oscillations: 5
+  accel_power: 1.5
 
 wiggle:
   duration: 300
-  sigma: 1.0
+  sigma: 0.01
+  inset: 0.4
+  interpolation_steps: 10
