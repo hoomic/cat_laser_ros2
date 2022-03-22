@@ -3,7 +3,7 @@ from rclpy.node import Node
 
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Vector3
-from cat_laser_interfaces.msg import Template, Movement
+from cat_laser_interfaces.msg import Template
 
 import cv2
 import numpy as np
@@ -52,9 +52,7 @@ class CatDetector(Node):
       , self.set_laser_coords
       , 10)
 
-    self.movement_pub_ = self.create_publisher(Movement, '/cat_laser/movement', 10)
-
-    self.model = torch.hub.load('ultralytics/yolov5', 'yolov5x')
+    self.model = torch.hub.load('ultralytics/yolov5', 'yolov5m')
     self.model.multi_label = True
 
     #find people and dogs asw well to disqualify them from being cats
@@ -74,6 +72,7 @@ class CatDetector(Node):
     self.frame_time.append(now - self.last_frame_time)
     self.last_frame_time = now
     frame = bridge.imgmsg_to_cv2(msg)
+    out = frame.copy()
     if self.laser_coords is None:
       self.laser_coords = (frame.shape[1] / 2, frame.shape[0] / 2)
     results = self.model(frame).pandas().xyxy[0]
@@ -87,13 +86,13 @@ class CatDetector(Node):
         if obj['name'] in ['dog', 'person'] or obj['confidence'] < 0.5:
           if obj['name'] == 'dog':
             cv2.rectangle(
-            frame
+            out
             , (int(obj.xmin), int(obj.ymin))
             , (int(obj.xmax), int(obj.ymax))
             , (0, 255, 0)
             , 1)
             cv2.putText(
-              frame
+              out
               , "{0:.1f}".format(obj.confidence * 100)
               , (int(obj.xmin), int(obj.ymax) - 1)
               , cv2.FONT_HERSHEY_SIMPLEX
@@ -123,13 +122,13 @@ class CatDetector(Node):
         n += 1
 
         cv2.rectangle(
-          frame
+          out
           , (int(obj.xmin), int(obj.ymin))
           , (int(obj.xmax), int(obj.ymax))
           , (0, 0, 255)
           , 1)
         cv2.putText(
-          frame
+          out
           , "{0:.1f}".format(obj.confidence * 100)
           , (int(obj.xmin), int(obj.ymin) - 1)
           , cv2.FONT_HERSHEY_SIMPLEX
@@ -139,28 +138,18 @@ class CatDetector(Node):
         msg.image = bridge.cv2_to_imgmsg(frame[int(obj.ymin):int(obj.ymax), int(obj.xmin):int(obj.xmax)])
         msg.coordinates = [cx, cy]
         self.template_pub_.publish(msg)
-      if n:
-        x_ave /= n
-        y_ave /= n
-
-        if np.sqrt((x_ave - self.laser_coords[0])**2 + (y_ave - self.laser_coords[1]) **2) > 20:
-          msg = Vector3()
-          msg.pan = float(self.laser_coords[0] - x_ave) * 0.0005 
-          msg.tilt = float(self.laser_coords[1] - y_ave) * 0.0005
-          msg.increment = True
-          self.movement_pub_.publish(msg)
 
     s = np.sum(self.frame_time).total_seconds()
     fps = len(self.frame_time) / s
     cv2.putText(
-      frame
+      out
       , "FPS: {:.1f}".format(fps)
-      , (10, frame.shape[0] - 10)
+      , (10, out.shape[0] - 10)
       , cv2.FONT_HERSHEY_SIMPLEX
       , 0.5, (255,255,255))
 
-    frame = cv2.resize(frame, display_size)
-    cv2.imshow('cat_detector', frame)
+    out = cv2.resize(out, display_size)
+    cv2.imshow('cat_detector', out)
     cv2.waitKey(1)  
 
   def set_laser_coords(self, msg):

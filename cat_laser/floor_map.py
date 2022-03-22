@@ -88,11 +88,8 @@ class FloorCalibration(Node):
       self.laser_coordinates = None
 
       self.display_factor = 4
-      self.calibrated = False
 
   def process_frame(self, msg):
-    if self.calibrated:
-      return
     frame = bridge.imgmsg_to_cv2(msg)
     frame = cv2.resize(frame, (frame.shape[1] * self.display_factor, frame.shape[0] * self.display_factor))
 
@@ -182,7 +179,7 @@ class FloorCalibration(Node):
       self.corners.append(Corner(x, y, pan, tilt))
 
   def finish(self):
-    self.calibrated = True
+    self.frame_subscriber_.unregister()
     path = HOME + '/cat_laser_floor_map/'
     if not os.path.exists(path):
       os.makedirs(path)

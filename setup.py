@@ -32,6 +32,7 @@ setup(
           , 'cat_detector = cat_laser.cat_detector:main'
           , 'cat_tracker = cat_laser.cat_tracker:main'
           , 'runner = cat_laser.runner:main'
+          , 'template_recorder = cat_laser.template_recorder:main'
         ],
     },
 )
